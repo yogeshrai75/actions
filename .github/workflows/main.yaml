@@ -1,4 +1,4 @@
-ame: SSH into Machine and Print Hello World
+name: SSH into Machine and Print Hello World
 
 on:
   push:
