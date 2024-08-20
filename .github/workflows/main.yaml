@@ -3,7 +3,7 @@ name: SSH into Machine and Print Hello World
 on:
   push:
     branches:
-      - main  # You can change this to any branch you want
+      - main  
 
 jobs:
   ssh-job:
