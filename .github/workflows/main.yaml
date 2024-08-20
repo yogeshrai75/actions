@@ -20,6 +20,13 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
       run: |
-        rsync -avz -e "ssh -i <(echo \"$SSH_KEY\") -o StrictHostKeyChecking=no" ./ ubuntu@ec2-13-126-44-102.ap-south-1.compute.amazonaws.com:/home/ubuntu/TEST/
+        # Create a temporary SSH key file
+        echo "$SSH_KEY" > temp_ssh_key
+        chmod 600 temp_ssh_key
 
+        # Use rsync with the temporary SSH key file
+        rsync -avz -e "ssh -i temp_ssh_key -o StrictHostKeyChecking=no" ./ ubuntu@ec2-13-126-44-102.ap-south-1.compute.amazonaws.com:/home/ubuntu/TEST/
+
+        # Remove the temporary SSH key file
+        rm temp_ssh_key
 
