@@ -18,13 +18,12 @@ jobs:
 
     - name: Create a text file on the remote machine
       env:
-        REMOTE_HOST: ${{ secrets.REMOTE_DNS }}
-        REMOTE_USER: ${{ secrets.USERNAME }}
-        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
         echo "${SSH_PRIVATE_KEY}" > private_key
         chmod 600 private_key
         ssh -i private_key -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "echo 'Hello from GitHub Actions' > ~/created_by_github_actions.txt"
         rm private_key
-
     
