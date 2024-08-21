@@ -1,37 +1,30 @@
-name: Build and Deploy Backend
+name: SSH into Remote Machine
 
-on:
+on: 
   push:
     branches:
-      - main
+      - main  # Run this action on push to the main branch
 
 jobs:
-  build-and-deploy:
+  ssh-job:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Build Docker image
-        run: |
-          docker build -t my-backend:${{ github.sha }} .
+    - name: Install SSH client
+      run: sudo apt-get install openssh-client
 
-      - name: Deploy to EC2
-        shell: /usr/bin/bash -e {0}
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          HOST: ${{ secrets.HOST_DNS }}
-          USER: ${{ secrets.USERNAME }}
-        run: |
-          echo "$SSH_PRIVATE_KEY" > key.pem
-          chmod 600 key.pem
-          scp -i key.pem -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:/path/to/your/backend/
-          ssh -i key.pem -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
-            cd /path/to/your/backend
-            docker-compose down
-            docker rmi $(docker images -f "dangling=true" -q)
-            docker-compose up -d
-          EOF
+    - name: Create a text file on the remote machine
+      env:
+        REMOTE_HOST: ${{ secrets.REMOTE_DNS }}
+        REMOTE_USER: ${{ secrets.USERNAME }}
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+      run: |
+        echo "${SSH_PRIVATE_KEY}" > private_key
+        chmod 600 private_key
+        ssh -i private_key -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "echo 'Hello from GitHub Actions' > ~/created_by_github_actions.txt"
+        rm private_key
 
     
