@@ -18,10 +18,11 @@ jobs:
           docker build -t my-backend:${{ github.sha }} .
 
       - name: Deploy to EC2
+        shell: /usr/bin/bash -e {0}
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          HOST: ${{ secrets.HOST_DNS }}
-          USER: ${{ secrets.EC2_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.HOST }}
+          USER: ${{ secrets.USER }}
         run: |
           echo "$SSH_PRIVATE_KEY" > key.pem
           chmod 600 key.pem
@@ -32,3 +33,5 @@ jobs:
             docker rmi $(docker images -f "dangling=true" -q)
             docker-compose up -d
           EOF
+
+    
